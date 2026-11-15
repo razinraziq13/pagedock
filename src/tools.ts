@@ -13,9 +13,9 @@ export interface ToolInfo {
 // The 17 planned tools. Unreleased tools are tracked here but never shown. See TOOL_STATUS.md.
 export const TOOLS: ToolInfo[] = [
   { id: 'merge', name: 'Merge PDF', benefit: 'Combine several PDFs into one, in the order you choose.', input: '2 or more PDFs', category: 'Organize', released: true },
-  { id: 'split', name: 'Split PDF', benefit: 'Extract pages or ranges into new PDFs.', input: '1 PDF', category: 'Organize', released: false },
-  { id: 'organize', name: 'Organize PDF', benefit: 'Reorder, remove and rotate pages.', input: '1 PDF', category: 'Organize', released: false },
-  { id: 'rotate', name: 'Rotate PDF', benefit: 'Turn pages 90, 180 or 270 degrees.', input: '1 PDF', category: 'Organize', released: false },
+  { id: 'split', name: 'Split PDF', benefit: 'Extract pages or ranges into new PDFs.', input: '1 PDF', category: 'Organize', released: true },
+  { id: 'organize', name: 'Organize PDF', benefit: 'Reorder, remove and rotate pages.', input: '1 PDF', category: 'Organize', released: true },
+  { id: 'rotate', name: 'Rotate PDF', benefit: 'Turn pages 90, 180 or 270 degrees.', input: '1 PDF', category: 'Organize', released: true },
   { id: 'images-to-pdf', name: 'Images to PDF', benefit: 'Turn JPG and PNG images into a PDF.', input: 'JPG / PNG', category: 'Convert', released: false },
   { id: 'pdf-to-images', name: 'PDF to Images', benefit: 'Save pages as JPG or PNG.', input: '1 PDF', category: 'Convert', released: false },
   { id: 'watermark', name: 'Watermark PDF', benefit: 'Stamp text or an image across pages.', input: '1 PDF', category: 'Edit & Forms', released: false },

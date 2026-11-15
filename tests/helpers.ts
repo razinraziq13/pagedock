@@ -19,7 +19,7 @@ export async function makePdf(label: string, pages: number): Promise<Uint8Array>
 
 /** Read each page's text with pdf.js — an independent reader from the library that wrote the file. */
 export async function readPageTexts(bytes: Uint8Array): Promise<string[]> {
-  const task = getDocument({ data: bytes.slice(), isEvalSupported: false, useSystemFonts: false, standardFontDataUrl });
+  const task = getDocument({ data: bytes.slice(), useSystemFonts: false, standardFontDataUrl });
   const pdf = await task.promise;
   const texts: string[] = [];
   for (let i = 1; i <= pdf.numPages; i++) {

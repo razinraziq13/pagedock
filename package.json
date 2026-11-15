@@ -6,16 +6,19 @@
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/copy-pdfjs-assets.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/copy-pdfjs-assets.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run"
   },
   "dependencies": {
-    "@cantoo/pdf-lib": "^2.11.1"
+    "@cantoo/pdf-lib": "^2.11.1",
+    "fflate": "^0.8.3",
+    "pdfjs-dist": "^6.5.438"
   },
   "devDependencies": {
-    "pdfjs-dist": "^6.5.438",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vite-plugin-pwa": "^2.0.0",

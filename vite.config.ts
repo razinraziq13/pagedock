@@ -27,7 +27,7 @@ export default defineConfig({
       },
       workbox: {
         // Precache everything the tools need, so they work with no connection after the first visit.
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mjs,wasm}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mjs,wasm,bcmap,pfb,ttf,icc}'],
         globIgnores: ['_qa/**'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         navigateFallback: 'index.html',

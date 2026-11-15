@@ -85,7 +85,7 @@ No UI framework is used. The interface is plain TypeScript and the DOM, which ke
   - Parse errors are caught and shown with the filename.
   - Output filenames are sanitised.
 - **Safety:**
-  - PDF JavaScript is never executed: pdf.js uses `isEvalSupported: false` and no scripting.
+  - PDF JavaScript is never executed: pdf.js scripting is not loaded, and the CSP blocks `eval`.
   - The original file is never written to. Outputs are always new Blobs.
   - The site is served with a strict Content Security Policy and loads no third-party scripts.
 
