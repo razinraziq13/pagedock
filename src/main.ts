@@ -1,4 +1,5 @@
 import './styles.css';
+import './theme.css';
 import { TOOLS } from './tools';
 import { renderDashboard } from './ui/dashboard';
 import { renderMerge } from './ui/merge';
@@ -18,6 +19,9 @@ import { renderAnnotate } from './ui/annotate';
 import { renderSign } from './ui/sign';
 import { renderForms } from './ui/forms';
 import { renderAbout } from './ui/about';
+import { decorateTool } from './ui/chrome';
+
+let undecorate: (() => void) | null = null;
 
 const views: Record<string, (root: HTMLElement) => void> = {
   merge: renderMerge,
@@ -41,6 +45,8 @@ const views: Record<string, (root: HTMLElement) => void> = {
 
 function route() {
   const main = document.getElementById('main')!;
+  undecorate?.();
+  undecorate = null;
   main.replaceChildren();
   const id = location.hash.replace(/^#\/?/, '');
   const tool = TOOLS.find((t) => t.id === id && t.released);
@@ -51,6 +57,7 @@ function route() {
   } else if (tool && views[tool.id]) {
     document.title = `${tool.name} · PageDock Free`;
     views[tool.id](main);
+    undecorate = decorateTool(main, tool);
     main.focus();
   } else {
     document.title = 'PageDock Free';

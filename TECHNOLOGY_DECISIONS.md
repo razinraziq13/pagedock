@@ -136,6 +136,23 @@ The owner asked for these two tools to work like their own Prism Scan app, so it
   - A corner handle resizes a placed signature and keeps its shape.
   - The signature is drawn with a multiply blend, so white paper behind a photographed signature disappears.
 
+## 6e. Visual redesign (15 November 2026)
+
+- **What changed:** the appearance only.
+  - `src/theme.css` loads after `styles.css` and sets the new palette: violet #7c3aed, turquoise #14b8a6, coral #fb7c6b and warm gold #fbbf24.
+  - Gradients, softer shadows and rounded cards.
+  - Each category has its own accent: Organize violet, Convert turquoise, Edit & Forms coral, Scan & Text gold, Compare blue.
+- **What didn't change:** no PDF logic. Tools are unchanged apart from presentation.
+- **New on screen:**
+  - Original tool icons (`src/ui/icons.ts`).
+  - The home page groups tools by purpose.
+  - `src/ui/chrome.ts` adds a coloured title badge and a step guide (Choose → Adjust → Process → Download). The guide only *watches* each screen and highlights the current step. Compare uses "Choose 2 files → See differences", because it has nothing to download.
+- **Accessibility:**
+  - Every text colour on its background meets WCAG AA (4.5:1 or better; measured).
+  - Focus outlines are kept, and `prefers-reduced-motion` turns off animation.
+  - Document previews and editors stay white or neutral.
+- **Assets:** no web fonts or images were added (system fonts, inline SVG), so offline size and privacy are unchanged.
+
 ## 7. Risks and open questions
 
 - **pdf-lib fork:** @cantoo/pdf-lib is maintained by a smaller team than the original. If it stalls, the original pdf-lib 1.17.1 is still a working fallback.

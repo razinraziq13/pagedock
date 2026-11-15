@@ -34,6 +34,10 @@ A tool appears on the dashboard only once it has passed end-to-end testing (`rel
 
 "Precached" means the tool's code is stored by the offline worker on the first visit. Merge and OCR were run with the server switched off; the other tools use the same cached code but were not each run offline.
 
+## Visual redesign — regression check (2026-11-15)
+
+After the new theme, each of these tools was run end to end in the browser (1280×860), and each still produced its result: Merge, Split, Rotate, Organize, Watermark, Page Numbers, Crop, PDF to Images, PDF to Word, PDF to Text, Fill Forms, Compare ("1 line only in A, 2 lines only in B") and OCR. The step guide moved Choose → Adjust → Download correctly. At 375 px, all 19 screens (home, 17 tools, About) showed no sideways scrolling. 87 of 87 automated tests pass. Not re-run in this pass: Images to PDF, Annotate drawing, Visual Sign placement and Scan (unchanged code; their screens were checked for layout).
+
 ## Scan to PDF and Visual Sign, Prism Scan version — evidence (2026-11-15)
 
 **Automated:** 87 of 87 tests pass. New tests in `tests/scanimage.test.ts`:
