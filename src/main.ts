@@ -1,5 +1,6 @@
 import './styles.css';
 import './theme.css';
+import './workspace.css';
 import { TOOLS } from './tools';
 import { renderDashboard } from './ui/dashboard';
 import { renderMerge } from './ui/merge';
@@ -19,11 +20,15 @@ import { renderAnnotate } from './ui/annotate';
 import { renderSign } from './ui/sign';
 import { renderForms } from './ui/forms';
 import { renderAbout } from './ui/about';
+import { renderWorkspace } from './ui/workspace';
+import { renderWordEditor } from './ui/word-editor';
 import { decorateTool } from './ui/chrome';
 
 let undecorate: (() => void) | null = null;
 
 const views: Record<string, (root: HTMLElement) => void> = {
+  'edit-pdf': renderWorkspace,
+  'edit-word': renderWordEditor,
   merge: renderMerge,
   split: renderSplit,
   rotate: renderRotate,

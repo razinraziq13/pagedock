@@ -1,4 +1,5 @@
 import { getPageCount, PdfInputError, type PdfInput } from '../core/pdf';
+import { outputPreview } from './thumbs';
 import { formatBytes, h } from './dom';
 import { makeSaveControls } from './save';
 
@@ -84,4 +85,11 @@ export async function withBusy(btn: HTMLButtonElement, label: string, fn: () => 
     btn.disabled = false;
     btn.textContent = old;
   }
+}
+
+/** Result panel with a thumbnail preview of the generated PDF above the download button. */
+export function pdfResultPanel(title: string, detail: string, bytes: Uint8Array, fileName: string, note?: string): HTMLElement {
+  const panel = resultPanel(title, detail, bytes, fileName, 'application/pdf', note);
+  panel.querySelector('.save-row')?.before(outputPreview(bytes));
+  return panel;
 }

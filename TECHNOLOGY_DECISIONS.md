@@ -153,6 +153,15 @@ The owner asked for these two tools to work like their own Prism Scan app, so it
   - Document previews and editors stay white or neutral.
 - **Assets:** no web fonts or images were added (system fonts, inline SVG), so offline size and privacy are unchanged.
 
+## 6f. Visual editor and page management (15 November 2026)
+
+- **One page manager** (`src/ui/pagemanager.ts`) serves Organize, Split and the Edit PDF rail: real pdf.js thumbnails rendered lazily, tick-box multi-select (touch), Shift-range, typed ranges, block move buttons for touch and drag-and-drop for mouse, undo/redo, and split points between pages.
+- **Edit PDF keeps plans, not files.** Marks and page changes are applied only on Save: marks first on the original pages, then order, rotation and deletion. The original file is never changed.
+- **Honest text editing in PDFs.** PDF text is positioned glyphs, so true in-place editing with reflow is not reliable. "Edit text" reads a line's position, font family and size with pdf.js, covers it with white and writes the new line with a standard PDF font. The old text remains in the file; the app says so and does not offer it as redaction.
+- **Word editing works on the real XML.** `src/core/docxedit.ts` changes only the characters that differ, so untouched runs keep their formatting; every other part of the package is kept byte-for-byte. The page view uses docx-preview (Apache-2.0) in the browser, with invisible bookmarks in a preview copy so a tap maps to the right paragraph. Save as PDF uses the browser's print to PDF, which keeps processing on the device.
+- **Thumbnails render with the 'print' intent**, which does not wait on animation frames, so they finish even when the app is in the background.
+- **Desktop EXE:** the brief asked again for a Windows EXE. The owner dropped the EXE earlier; on Windows the installed PWA opens in its own window and works offline.
+
 ## 7. Risks and open questions
 
 - **pdf-lib fork:** @cantoo/pdf-lib is maintained by a smaller team than the original. If it stalls, the original pdf-lib 1.17.1 is still a working fallback.

@@ -3,6 +3,8 @@ import type { Category } from '../tools';
 
 const PAGE = 'M6 3h8l4 4v14H6z M14 3v4h4';
 const PATHS: Record<string, string> = {
+  'edit-pdf': 'M5 3h9l4 4v6 M5 3v18h7 M14 3v4h4 M14 21l1-4 5-5 3 3-5 5z',
+  'edit-word': 'M4 4h16v16H4z M7 8l1.5 8 2.5-6 2.5 6L15 8 M17 8h0',
   merge: 'M4 4h7v9H4z M13 11h7v9h-7z M11 8h3a2 2 0 0 1 2 2v1 M14 9l2 2 2-2',
   split: 'M5 3h14v7H5z M5 14h14v7H5z M2 12h3 M8 12h2 M14 12h2 M19 12h3',
   organize: 'M4 4h6v7H4z M14 4h6v7h-6z M4 15h6v5H4z M14 15h6v5h-6z',

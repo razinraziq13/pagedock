@@ -1,0 +1,149 @@
+/* Page manager, PDF workspace and Word workspace. Loaded after theme.css. Document pages stay white. */
+
+.btn.small { min-height: 38px; padding: 6px 12px; font-size: .9rem; border-radius: 10px; }
+.btn.danger, .icon-btn.danger { color: var(--coral-dark); }
+.btn.danger:hover:not(:disabled), .icon-btn.danger:hover:not(:disabled) { border-color: var(--coral-dark); background: var(--coral-soft); color: var(--coral-dark); }
+.btn:disabled { opacity: .45; cursor: default; }
+.icon-btn.fmt[aria-pressed='true'] { background: var(--violet-soft); border-color: var(--violet); color: var(--violet-dark); }
+
+/* ---------------------------------------------------------------- page manager */
+.page-manager { display: grid; gap: 10px; }
+.pm-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-sm); }
+.pm-select, .pm-ops, .pm-history, .pm-range-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.pm-range { width: 150px; min-height: 38px; padding: 6px 10px; }
+.pm-range[aria-invalid='true'] { border-color: var(--coral-dark); }
+.pm-count { font-size: .9rem; color: var(--muted); font-weight: 600; }
+.pm-range-msg { color: var(--coral-dark); flex-basis: 100%; }
+.pm-range-msg:empty { display: none; }
+.pm-ops .icon-btn { width: 38px; height: 38px; }
+
+.pm-card { position: relative; }
+.pm-card:focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+.pm-check { position: absolute; top: 6px; left: 6px; z-index: 1; width: 30px; height: 30px; border-radius: 9px; border: 2px solid #c9bfe6; background: #fff; color: #fff; font-weight: 800; font-size: .95rem; cursor: pointer; display: grid; place-items: center; }
+.pm-check[aria-pressed='true'] { background: var(--grad-btn); border-color: transparent; }
+.pm-card.selected { box-shadow: 0 0 0 2px var(--violet) inset; }
+.pm-card .page-label { font-weight: 600; flex-wrap: wrap; justify-content: center; }
+.part-tag { margin-left: 4px; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--part, var(--violet-soft)); color: var(--part-ink, var(--violet-dark)); }
+
+/* Split boundaries: a slim column between cards with a + / ✂ toggle. */
+.pm-mode-cuts { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr) 34px); align-items: center; }
+.pm-cut { display: grid; place-items: center; list-style: none; }
+.pm-cut-btn { width: 32px; height: 56px; border-radius: 10px; border: 2px dashed #c9bfe6; background: transparent; color: var(--violet-dark); font-weight: 800; font-size: 1.05rem; cursor: pointer; }
+.pm-cut-btn:hover { border-color: var(--violet); background: var(--violet-soft); }
+.pm-cut.on .pm-cut-btn { border-style: solid; border-color: var(--coral-dark); background: var(--coral-soft); color: var(--coral-dark); }
+.part-0 { --part: #f3edff; --part-ink: #5b21b6; }
+.part-1 { --part: #e3f8f5; --part-ink: #0f766e; }
+.part-2 { --part: #fff0ec; --part-ink: #b33a26; }
+.part-3 { --part: #fff6dc; --part-ink: #8a5306; }
+.part-4 { --part: #eaf1ff; --part-ink: #1d4ed8; }
+.part-5 { --part: #fde8f3; --part-ink: #a21c5f; }
+.pm-mode-cuts .pm-card { border-color: var(--part-ink); border-width: 2px; cursor: default; }
+.pm-mode-cuts .pm-check { display: none; }
+
+.split-plan { padding: 12px 14px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); }
+.split-plan p { margin: 0; }
+.split-files { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.split-files li { padding: 6px 12px; border-radius: 999px; background: var(--part); color: var(--part-ink); font-size: .9rem; }
+.split-previews { display: grid; gap: 10px; clear: both; padding-top: 8px; }
+
+/* ---------------------------------------------------------------- result preview strip */
+.out-preview { list-style: none; margin: 12px 0 10px; padding: 10px; display: flex; gap: 10px; overflow-x: auto; background: rgba(255, 255, 255, .7); border-radius: 14px; clear: both; }
+.out-preview li { flex: none; display: grid; justify-items: center; gap: 4px; font-size: .8rem; color: var(--muted); }
+.out-preview .thumb-canvas { max-width: 90px; max-height: 120px; }
+.out-preview .more { align-self: center; padding: 0 8px; }
+
+/* ---------------------------------------------------------------- workspaces */
+.tool.ws-tool { max-width: 1400px; }
+.ws { display: grid; gap: 10px; margin-top: 18px; }
+.ws-toolbar { position: sticky; top: 64px; z-index: 5; display: grid; gap: 8px; padding: 10px 12px; background: rgba(255, 255, 255, .92); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow-sm); }
+.ws-tools { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.ws-tools .chip { flex: none; min-height: 38px; padding: 6px 12px; }
+.ws-tools .chip[aria-pressed='true'] { background: var(--grad-btn); color: #fff; border-color: transparent; }
+.ws-bar2 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.ws-bar2 > .btn.primary { margin-left: auto; }
+.ws-group { display: flex; align-items: center; gap: 4px; }
+.ws-group .icon-btn { width: 38px; height: 38px; }
+.ws-zoom-label, .ws-page-label { min-width: 52px; text-align: center; font-weight: 600; font-size: .9rem; }
+.ws-size-sel { width: auto; min-height: 38px; padding: 4px 8px; }
+.ws-help { margin: 0; }
+
+.ws-body { display: grid; grid-template-columns: 190px minmax(0, 1fr) 290px; gap: 12px; align-items: start; }
+.ws-rail, .ws-props { position: sticky; top: 190px; max-height: calc(100vh - 210px); overflow: auto; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 10px; box-shadow: var(--shadow-sm); }
+.ws-props { display: grid; gap: 10px; align-content: start; padding: 14px; }
+.ws-props .text-input { max-width: none; }
+.ws-h { margin: 4px 0 0; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--violet-dark); }
+.ws-props-group { display: grid; gap: 10px; }
+.ws-props [hidden] { display: none !important; }
+.ws-canvas { min-width: 0; background: linear-gradient(180deg, #ece8f6, #e4dff0); border-radius: 18px; padding: 16px; }
+.ws-canvas .edit-scroll { max-height: calc(100vh - 230px); padding: 4px; }
+.ws-canvas[data-tool='select'] .edit-layer { cursor: default; }
+.ws-canvas[data-tool='edittext'] .edit-layer { cursor: text; }
+.text-target { fill: rgba(124, 58, 237, .06); stroke: rgba(124, 58, 237, .55); stroke-width: 1; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; cursor: text; }
+.text-target:hover { fill: rgba(124, 58, 237, .16); }
+
+/* The rail: a slim column of page cards. */
+.pm-layout-rail .pm-toolbar { padding: 8px; gap: 6px; border: 0; box-shadow: none; background: transparent; }
+.pm-layout-rail .pm-history { display: none; }
+.ws-rail { overflow-x: hidden; }
+.pm-layout-rail .pm-select { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pm-layout-rail .pm-select .btn { padding: 4px 6px; font-size: .8rem; min-height: 34px; }
+.pm-layout-rail .pm-range-wrap { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
+.pm-layout-rail .pm-range { width: 100%; min-width: 0; min-height: 34px; }
+.pm-layout-rail .pm-ops { width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.pm-layout-rail .pm-ops .icon-btn { width: 100%; height: 34px; }
+.pm-layout-rail .pm-count { font-size: .8rem; }
+.pm-rail { grid-template-columns: 1fr; gap: 8px; }
+.pm-rail .page-card { padding: 8px 6px; }
+.pm-rail .thumb-box { width: 100%; height: 130px; }
+.pm-rail .page-card.current { border-color: var(--turquoise); box-shadow: 0 0 0 3px rgba(20, 184, 166, .25); }
+
+/* ---------------------------------------------------------------- Word */
+.word-canvas { padding: 0; }
+.word-view { --word-zoom: 1; max-height: calc(100vh - 230px); overflow: auto; padding: 16px; }
+.word-view > .docx-wrapper { zoom: var(--word-zoom); background: transparent !important; padding: 0 !important; }
+.word-view .docx-wrapper > section.docx { box-shadow: 0 4px 18px rgba(31, 22, 64, .18) !important; margin: 0 auto 18px !important; }
+.word-view p { cursor: text; border-radius: 3px; }
+.word-view p:hover { outline: 1px dashed rgba(124, 58, 237, .5); outline-offset: 2px; }
+.word-view p.word-sel { outline: 2px solid var(--violet); outline-offset: 2px; background: rgba(124, 58, 237, .06); }
+.word-rail { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.word-thumb { width: 100%; display: grid; gap: 4px; justify-items: center; padding: 6px; background: transparent; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; }
+.word-thumb:hover { border-color: var(--violet); }
+.word-mini { width: 100%; overflow: hidden; position: relative; pointer-events: none; }
+.word-mini > section { transform-origin: top left; margin: 0 !important; box-shadow: none !important; position: absolute; left: 0; top: 0; }
+
+/* Save as PDF: print only the Word pages. */
+#print-root { display: none; }
+@media print {
+  html.print-word body > :not(#print-root) { display: none !important; }
+  html.print-word #print-root { display: block; }
+  html.print-word #print-root .word-view { max-height: none; overflow: visible; padding: 0; }
+  html.print-word #print-root .docx-wrapper { zoom: 1; }
+  html.print-word #print-root section.docx { box-shadow: none !important; margin: 0 !important; break-after: page; }
+  @page { margin: 0; }
+}
+
+/* ---------------------------------------------------------------- tablets and phones */
+@media (max-width: 1100px) {
+  .ws-body { grid-template-columns: 160px minmax(0, 1fr); }
+  .ws-props { grid-column: 1 / -1; position: static; max-height: none; }
+}
+@media (max-width: 760px) {
+  .ws-toolbar { top: 56px; padding: 8px; }
+  .ws-bar2 { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+  .ws-bar2 > * { flex: none; }
+  .ws-bar2 > .btn.primary { margin-left: 0; }
+  .ws-body { grid-template-columns: 1fr; }
+  /* Pages become a strip you swipe sideways above the page. */
+  .ws-rail { position: static; max-height: none; padding: 6px; }
+  .pm-rail { grid-auto-flow: column; grid-auto-columns: 96px; grid-template-columns: none; overflow-x: auto; padding-bottom: 4px; }
+  .pm-rail .thumb-box { height: 104px; }
+  .word-rail { grid-auto-flow: column; grid-auto-columns: 84px; overflow-x: auto; }
+  .ws-canvas { padding: 8px; }
+  .ws-canvas .edit-scroll, .word-view { max-height: 70vh; }
+  .word-view { padding: 8px; }
+  .pm-mode-cuts { grid-template-columns: repeat(2, minmax(0, 1fr) 30px); }
+  .pm-range { width: 120px; }
+  .pm-layout-rail .pm-ops { grid-template-columns: repeat(7, 1fr); }
+  .pm-layout-rail .pm-ops .icon-btn { height: 40px; }
+  .pm-layout-rail .pm-select .btn { min-height: 40px; }
+}

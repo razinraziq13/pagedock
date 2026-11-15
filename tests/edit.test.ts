@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { PDFDocument, PDFName, PDFDict, PDFString, StandardFonts, degrees } from '@cantoo/pdf-lib';
 import { applyAnnotations, cropPdf, fillForm, readForm, type Annotation } from '../src/core/edit';
-import { makePdf, makePng, readPlacedText } from './helpers';
+import { makePdf, makePng, readPageTexts, readPlacedText } from './helpers';
 
 const black = { r: 0, g: 0, b: 0 };
 
@@ -149,5 +149,41 @@ describe('forms', () => {
     const bytes = await doc.save();
     expect((await readForm({ name: 'x.pdf', bytes })).xfa).toBe('xfa-only');
     await expect(fillForm({ name: 'x.pdf', bytes }, {}, false)).rejects.toThrow(/dynamic XFA/);
+  });
+});
+
+describe('workspace marks', () => {
+  const black = { r: 0, g: 0, b: 0 };
+  it('writes text in the chosen standard font and style', async () => {
+    const { PDFDocument: D } = await import('@cantoo/pdf-lib');
+    const out = await applyAnnotations({ name: 'a.pdf', bytes: await makePdf('P', 1) }, [
+      { type: 'text', page: 0, x: 72, y: 300, size: 14, color: black, text: 'Serif bold', font: 'serif', bold: true },
+      { type: 'text', page: 0, x: 72, y: 340, size: 14, color: black, text: 'Mono italic', font: 'mono', italic: true },
+    ]);
+    const raw = new TextDecoder('latin1').decode(out);
+    expect(raw).toContain('/Times-Bold');
+    expect(raw).toContain('/Courier-Oblique');
+    expect((await readPageTexts(out))[0]).toContain('Serif bold');
+    expect((await D.load(out)).getPageCount()).toBe(1);
+  });
+
+  it('replaces a line: draws a white cover, then the new text', async () => {
+    const out = await applyAnnotations({ name: 'a.pdf', bytes: await makePdf('P', 1) }, [
+      { type: 'text', page: 0, x: 72, y: 60, size: 24, color: black, text: 'New words', cover: { x: 70, y: 58, w: 80, h: 28 } },
+    ]);
+    const text = (await readPageTexts(out))[0];
+    expect(text).toContain('New words');
+    // Honest limitation: the original words are hidden, not deleted.
+    expect(text).toContain('P-1');
+  });
+
+  it('draws white-out boxes and normal-blend pictures', async () => {
+    const out = await applyAnnotations({ name: 'a.pdf', bytes: await makePdf('P', 1) }, [
+      { type: 'cover', page: 0, x: 60, y: 60, w: 100, h: 40, color: { r: 1, g: 1, b: 1 } },
+      { type: 'image', page: 0, x: 100, y: 200, w: 50, h: 50, png: makePng(4, 4), blend: 'normal' },
+    ]);
+    const raw = new TextDecoder('latin1').decode(out);
+    expect(raw).not.toContain('/Multiply');
+    expect(raw).toContain('/Image');
   });
 });

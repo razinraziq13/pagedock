@@ -23,6 +23,9 @@ This list was last checked against `package-lock.json` and the files in `node_mo
 | OpenCV.js, from @techstark/opencv-js (document edge finding in Scan to PDF; runs in its own worker) | 4.10.0-release.1 | Apache-2.0 |
 | docx (PDF to Word) | 9.15.4 | MIT |
 | nanoid (dependency of docx) | 6.0.2 | MIT |
+| docx-preview (Edit Word page view) | 0.4.1 | Apache-2.0 |
+| jszip (dependency of docx-preview) | 3.10.2 | Dual MIT or GPL-3.0-or-later; used under MIT |
+| @xmldom/xmldom (tests only, not shipped) | 0.9.12 | MIT |
 | tesseract.js (OCR, browser API and worker) | 7.0.0 | Apache-2.0 |
 | tesseract.js-core (OCR engine, WebAssembly; LSTM builds only) | 7.0.0 | Apache-2.0 |
 | English OCR model `eng.traineddata` ("4.0.0_best_int") from @tesseract.js-data/eng | 1.0.0 | Package: MIT. The data comes from Google's tessdata, Apache-2.0 |

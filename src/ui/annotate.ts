@@ -41,7 +41,7 @@ export function renderAnnotate(root: HTMLElement) {
   const runBtn = h('button', { type: 'button', class: 'btn primary big' }, 'Save annotated PDF');
   const result = h('div', { class: 'result' });
 
-  const HELP: Record<Tool, string> = {
+  const HELP: Partial<Record<Tool, string>> = {
     select: 'Tap a mark to select it, then drag it, or use arrow keys. Delete removes it.',
     text: 'Type your text above, then tap where it should go.',
     rect: 'Drag on the page to draw a box.', ellipse: 'Drag on the page to draw a circle or oval.',
@@ -50,7 +50,7 @@ export function renderAnnotate(root: HTMLElement) {
   };
   const tools = toolButtons<Tool>([['select', 'Select'], ['text', 'Text'], ['highlight', 'Highlight'], ['rect', 'Box'], ['ellipse', 'Circle'], ['arrow', 'Arrow'], ['pen', 'Pen']], 'select', (t) => {
     textFields.hidden = t !== 'text';
-    help.textContent = HELP[t];
+    help.textContent = HELP[t] ?? '';
     if (t === 'text') text.focus();
   });
 

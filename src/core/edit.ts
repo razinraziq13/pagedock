@@ -36,37 +36,74 @@ export async function cropPdf(input: PdfInput, m: CropMargins, pages: string | '
 export interface Color { r: number; g: number; b: number }
 
 /** Coordinates are display-space points with a TOP-LEFT origin, matching what the user sees on screen. */
+export type FontFamily = 'sans' | 'serif' | 'mono';
+
+/** A filled box (white by default) that hides what is under it. */
+export interface Box { x: number; y: number; w: number; h: number }
+
 export type Annotation =
-  | { type: 'text'; page: number; x: number; y: number; size: number; color: Color; text: string }
+  | {
+      type: 'text'; page: number; x: number; y: number; size: number; color: Color; text: string;
+      font?: FontFamily; bold?: boolean; italic?: boolean;
+      /** "Replace text": a box filled with `coverColor` (white by default) drawn first, hiding the original words. */
+      cover?: Box; coverColor?: Color;
+    }
   | { type: 'rect' | 'ellipse' | 'highlight'; page: number; x: number; y: number; w: number; h: number; color: Color; width?: number }
+  | { type: 'cover'; page: number; x: number; y: number; w: number; h: number; color: Color }
   | { type: 'line' | 'arrow'; page: number; x1: number; y1: number; x2: number; y2: number; color: Color; width: number }
   | { type: 'ink'; page: number; points: [number, number][]; color: Color; width: number }
-  | { type: 'image'; page: number; x: number; y: number; w: number; h: number; png: Uint8Array };
+  | { type: 'image'; page: number; x: number; y: number; w: number; h: number; png: Uint8Array; blend?: 'multiply' | 'normal' };
+
+const FONT_TABLE: Record<FontFamily, [StandardFonts, StandardFonts, StandardFonts, StandardFonts]> = {
+  // regular, bold, italic, bold italic
+  sans: [StandardFonts.Helvetica, StandardFonts.HelveticaBold, StandardFonts.HelveticaOblique, StandardFonts.HelveticaBoldOblique],
+  serif: [StandardFonts.TimesRoman, StandardFonts.TimesRomanBold, StandardFonts.TimesRomanItalic, StandardFonts.TimesRomanBoldItalic],
+  mono: [StandardFonts.Courier, StandardFonts.CourierBold, StandardFonts.CourierOblique, StandardFonts.CourierBoldOblique],
+};
+
+/** The standard PDF font for a family and style (these 12 fonts need no embedding). */
+export function standardFontFor(font: FontFamily = 'sans', bold = false, italic = false): StandardFonts {
+  return FONT_TABLE[font][(bold ? 1 : 0) + (italic ? 2 : 0)];
+}
 
 function at(page: PDFPage, x: number, yTop: number) {
   return toUserSpace(page, x, displayBox(page).height - yTop);
 }
 
+function fillBox(page: PDFPage, b: Box, c: Color) {
+  const p = at(page, b.x, b.y + b.h);
+  page.drawRectangle({ x: p.x, y: p.y, width: b.w, height: b.h, color: rgb(c.r, c.g, c.b), rotate: degrees(p.rot) });
+}
+
+const WHITE: Color = { r: 1, g: 1, b: 1 };
+
 export async function applyAnnotations(input: PdfInput, annots: Annotation[]): Promise<Uint8Array> {
   if (annots.length === 0) throw new RangeError_('Add at least one mark before saving.');
   const doc = await loadPdf(input);
   const n = doc.getPageCount();
-  let font: PDFFont | null = null;
-  for (const a of annots) {
-    if (!Number.isInteger(a.page) || a.page < 0 || a.page >= n) throw new RangeError_(`Page ${a.page + 1} does not exist.`);
+  const fonts = new Map<StandardFonts, PDFFont>();
+  const fontFor = async (f: StandardFonts) => { if (!fonts.has(f)) fonts.set(f, await doc.embedFont(f)); return fonts.get(f)!; };
+  // Covers go first on each page, so a replacement never hides other marks the user added.
+  for (const a of annots) if (!Number.isInteger(a.page) || a.page < 0 || a.page >= n) throw new RangeError_(`Page ${a.page + 1} does not exist.`);
+  for (const a of annots) if (a.type === 'text' && a.cover) fillBox(doc.getPage(a.page), a.cover, a.coverColor ?? WHITE);
+  const ordered = [...annots.filter((a) => a.type === 'cover'), ...annots.filter((a) => a.type !== 'cover')];
+  for (const a of ordered) {
     const page = doc.getPage(a.page);
     const color = 'color' in a ? rgb(a.color.r, a.color.g, a.color.b) : rgb(0, 0, 0);
     switch (a.type) {
       case 'text': {
-        font ??= await doc.embedFont(StandardFonts.Helvetica);
+        const font = await fontFor(standardFontFor(a.font, a.bold, a.italic));
         const bad = unsupportedChars(font, a.text.replace(/\n/g, ''));
         if (bad.length) throw new RangeError_(`The built-in PDF font cannot show: ${bad.slice(0, 8).join(' ')}.`);
         a.text.split('\n').forEach((line, i) => {
           const p = at(page, a.x, a.y + a.size * 0.8 + i * a.size * 1.2);
-          page.drawText(line, { x: p.x, y: p.y, size: a.size, font: font!, color, rotate: degrees(p.rot) });
+          page.drawText(line, { x: p.x, y: p.y, size: a.size, font, color, rotate: degrees(p.rot) });
         });
         break;
       }
+      case 'cover':
+        fillBox(page, a, a.color);
+        break;
       case 'rect':
       case 'highlight': {
         const p = at(page, a.x, a.y + a.h);
@@ -104,7 +141,8 @@ export async function applyAnnotations(input: PdfInput, annots: Annotation[]): P
         try { img = await doc.embedPng(a.png); } catch { throw new RangeError_('The signature image could not be read.'); }
         const p = at(page, a.x, a.y + a.h);
         // Multiply blend: white paper behind a signature photo disappears, like ink on paper (as in Prism Scan).
-        page.drawImage(img, { x: p.x, y: p.y, width: a.w, height: a.h, rotate: degrees(p.rot), blendMode: BlendMode.Multiply });
+        // Pictures added in the editor use normal blending so they look exactly as placed.
+        page.drawImage(img, { x: p.x, y: p.y, width: a.w, height: a.h, rotate: degrees(p.rot), blendMode: a.blend === 'normal' ? BlendMode.Normal : BlendMode.Multiply });
         break;
       }
     }

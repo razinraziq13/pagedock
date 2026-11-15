@@ -3,7 +3,7 @@
 **Last updated:** 15 November 2026
 **Delivery:** website / installable PWA only. The Windows `.exe` was dropped by the project owner.
 
-**Released:** 17 of 17 (R1.0, R1.1, R1.2 and R1.3).
+**Released:** 19 (R1.0–R1.3, plus Edit PDF and Edit Word on 15 November 2026).
 
 A tool appears on the dashboard only once it has passed end-to-end testing (`released: true` in `src/tools.ts`).
 
@@ -31,6 +31,8 @@ A tool appears on the dashboard only once it has passed end-to-end testing (`rel
 | 15 | Compare PDFs | R1.2 | **Released** | Passed | Unverified | Precached |
 | 16 | OCR PDF to Text | R1.2 | **Released** | Passed | Unverified | **Passed** after first use (server stopped, page reloaded, OCR ran) |
 | 17 | PDF to Word | R1.3 | **Released** | Passed; .docx opened and edited in Microsoft Word | Unverified | Precached |
+| 18 | Edit PDF (workspace) | R1.4 | **Released** | Passed | Unverified (layout checked at 375 px) | Precached |
+| 19 | Edit Word | R1.4 | **Released** | Passed; saved .docx reopened by the app; not yet opened in Microsoft Word | Unverified (layout checked at 375 px) | Precached |
 
 "Precached" means the tool's code is stored by the offline worker on the first visit. Merge and OCR were run with the server switched off; the other tools use the same cached code but were not each run offline.
 
@@ -205,3 +207,17 @@ After the new theme, each of these tools was run end to end in the browser (1280
 - Very large files.
 - Encrypted PDFs. The code refuses them, but there is no encrypted sample file yet.
 - Opening the merged file in a separate desktop PDF viewer by hand.
+
+## Visual editor and page management — evidence (2026-11-15)
+
+Automated: 104 of 104 tests pass, including new tests for extracting pages, splitting at boundaries, page-list helpers, fonts/white-out/pictures in PDF output, and Word text and formatting edits (only changed characters are rewritten; untouched bold words stay bold; pictures and tables kept; table cells protected from deletion).
+
+In the browser (Chromium, real files from `public/_qa`):
+- **Split:** page ticks, Shift-range and typed ranges (`2-4, 9` gives a clear error); Extract made a 3-page file; Split by boundaries showed File 1–3 before processing and produced 3 PDFs with previews.
+- **Organize:** multi-select, move to start, rotate, delete by typed range, undo/redo, drag-and-drop, Extract selected; the result preview showed the rotated pages.
+- **Edit PDF:** Edit text picked up a real line (text, font and size), the replacement was typed and saved; Add text in Times Bold; picture placed; highlight, box, pen and white-out drawn; page 2 rotated and moved first while staying open; one Undo/Redo list across pages and marks; zoom 50–300 %. The saved PDF was read back with pdf.js: new text present, page order and /Rotate correct. Limitation confirmed by test: covered words remain in the file.
+- **Edit Word:** 2 pages drawn with thumbnails; tap-to-select paragraph; live text edit kept the bold run; centre alignment, undo and redo; new paragraph; saved .docx reopened.
+- **Regression:** Annotate (box, save) and Visual Sign (typed signature, place, save; multiply blend kept) still work.
+- **Phone width (375 px):** Edit PDF, Edit Word, Organize, Split (both modes) and home have no sideways scrolling.
+
+Not verified yet: drag-and-drop on a real touch phone (touch users have move buttons instead), Save as PDF from Edit Word (uses the browser print dialog, which automation cannot complete), and opening an edited .docx in Microsoft Word.

@@ -119,3 +119,55 @@ export async function organizePdf(input: PdfInput, plan: PagePlan[]): Promise<Ui
   out.setCreator('PageDock Free');
   return out.save();
 }
+
+/** Write page numbers (0-based indices) as a short 1-based list, e.g. [0,1,2,4] → "1-3, 5". */
+export function formatPageList(indices: number[]): string {
+  const sorted = [...new Set(indices)].sort((a, b) => a - b);
+  const parts: string[] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    let j = i;
+    while (j + 1 < sorted.length && sorted[j + 1] === sorted[j] + 1) j++;
+    parts.push(i === j ? `${sorted[i] + 1}` : `${sorted[i] + 1}-${sorted[j] + 1}`);
+    i = j;
+  }
+  return parts.join(', ');
+}
+
+/**
+ * Pages of a `count`-page document grouped by split boundaries. A boundary `b` means "cut after page b"
+ * (0-based), so cuts [2] on 5 pages gives [[0,1,2],[3,4]].
+ */
+export function groupsFromCuts(count: number, cuts: number[]): number[][] {
+  const valid = [...new Set(cuts)].filter((c) => Number.isInteger(c) && c >= 0 && c < count - 1).sort((a, b) => a - b);
+  const groups: number[][] = [];
+  let start = 0;
+  for (const c of [...valid, count - 1]) {
+    groups.push(Array.from({ length: c - start + 1 }, (_, i) => start + i));
+    start = c + 1;
+  }
+  return groups;
+}
+
+/** Extract: one new PDF with the chosen pages, in document order. */
+export async function extractPages(input: PdfInput, indices: number[]): Promise<OutputFile> {
+  const src = await loadPdf(input);
+  const n = src.getPageCount();
+  const pages = [...new Set(indices)].sort((a, b) => a - b);
+  if (pages.length === 0) throw new RangeError_('Select at least one page to extract.');
+  for (const i of pages) if (!Number.isInteger(i) || i < 0 || i >= n) throw new RangeError_(`Page ${i + 1} does not exist.`);
+  return { name: `${baseName(input.name)}-pages-${formatPageList(pages).replace(/, /g, '_')}.pdf`, bytes: await copyToNew(src, pages) };
+}
+
+/** Split by boundaries: one PDF per part. Every page ends up in exactly one file. */
+export async function splitAtCuts(input: PdfInput, cuts: number[]): Promise<OutputFile[]> {
+  const src = await loadPdf(input);
+  const groups = groupsFromCuts(src.getPageCount(), cuts);
+  if (groups.length < 2) throw new RangeError_('Choose at least one place to split.');
+  const base = baseName(input.name);
+  const outs: OutputFile[] = [];
+  for (const [i, g] of groups.entries()) {
+    const label = g.length === 1 ? `${g[0] + 1}` : `${g[0] + 1}-${g[g.length - 1] + 1}`;
+    outs.push({ name: `${base}-part${i + 1}-p${label}.pdf`, bytes: await copyToNew(src, g) });
+  }
+  return outs;
+}
