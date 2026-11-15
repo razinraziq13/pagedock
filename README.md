@@ -1,4 +1,4 @@
-# PageDock Free
+# PageDock 
 
 Free PDF tools that stay on your device. PageDock is a website you can install as an app (a PWA) on Windows, iPhone and Android. Your files are processed in your browser and are never uploaded.
 
