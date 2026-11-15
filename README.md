@@ -2,7 +2,7 @@
 
 Free PDF tools that stay on your device. PageDock is a website you can install as an app (a PWA) on Windows, iPhone and Android. Your files are processed in your browser and are never uploaded.
 
-**Status:** early development. **8 of 17** planned tools are available: all of release R1.0 (Merge, Split, Organize, Rotate, Images to PDF, PDF to Images, Watermark, Page Numbers). See [TOOL_STATUS.md](TOOL_STATUS.md) for what is tested on which platform.
+**Status:** all **17 of 17** planned tools are available. See [TOOL_STATUS.md](TOOL_STATUS.md) for what is tested on which platform.
 
 ## Use it
 
@@ -10,7 +10,7 @@ Free PDF tools that stay on your device. PageDock is a website you can install a
 - **Install on Windows:** open the site in Edge or Chrome, then click the install icon in the address bar.
 - **Install on iPhone:** open the site in Safari, tap Share, then **Add to Home Screen**.
 - **Install on Android:** open the site in Chrome, tap ⋮, then **Install app** (or **Add to Home screen**).
-- **Offline:** after the first visit, the app is stored in your browser and should work with no internet. This has not yet been checked on real phones.
+- **Offline:** after the first visit, every tool works with no internet. OCR downloads its reading engine (about 7 MB) the first time you use it; after that it also works offline.
 
 ## Develop
 

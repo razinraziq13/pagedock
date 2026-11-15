@@ -3,29 +3,96 @@
 **Last updated:** 15 November 2026
 **Delivery:** website / installable PWA only. The Windows `.exe` was dropped by the project owner.
 
-**Released:** 8 of 17 — all of R1.0 (Merge, Split, Organize, Rotate, Images to PDF, PDF to Images, Watermark, Page Numbers).
+**Released:** 17 of 17 (R1.0, R1.1, R1.2 and R1.3).
 
 A tool appears on the dashboard only once it has passed end-to-end testing (`released: true` in `src/tools.ts`).
 
-| # | Tool | Stage | Status | Desktop browser | iOS Safari | Android Chrome |
+**About the phone column:**
+- After R1.0 was published, the project owner tested the live site on their own phone and reported "all good". That covered Merge, saving the result, Images to PDF with camera photos, and offline Rotate from the home-screen app.
+- The phone model, operating system and browser were **not recorded**. So this counts as one owner-reported phone pass, not a verified iOS **and** Android result.
+- Tools 9–17 have **not** been tried on a phone yet.
+
+| # | Tool | Stage | Status | Desktop browser (Chromium) | Owner's phone | Offline |
 |---:|---|---|---|---|---|---|
-| 1 | Merge PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 2 | Split PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 3 | Organize PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 4 | Rotate PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 5 | Images to PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 6 | PDF to Images | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 7 | Watermark PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 8 | Page Numbers | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 9 | Crop PDF | R1.1 | Not started | — | — | — |
-| 10 | Annotate PDF | R1.1 | Not started | — | — | — |
-| 11 | Visual Sign PDF | R1.1 | Not started | — | — | — |
-| 12 | Fill PDF Forms | R1.1 | Not started | — | — | — |
-| 13 | Scan to PDF | R1.1 | Not started | — | — | — |
-| 14 | PDF to Text | R1.1 | Not started | — | — | — |
-| 15 | Compare PDFs | R1.2 | Not started | — | — | — |
-| 16 | OCR PDF to Text | R1.2 | Not started | — | — | — |
-| 17 | PDF to Word | R1.3 | Not started | — | — | — |
+| 1 | Merge PDF | R1.0 | **Released** | Passed | Passed (owner report) | Passed (desktop and owner report) |
+| 2 | Split PDF | R1.0 | **Released** | Passed | Unverified | Precached |
+| 3 | Organize PDF | R1.0 | **Released** | Passed | Unverified | Precached |
+| 4 | Rotate PDF | R1.0 | **Released** | Passed | Passed (owner report) | Passed (owner report) |
+| 5 | Images to PDF | R1.0 | **Released** | Passed | Passed (owner report) | Precached |
+| 6 | PDF to Images | R1.0 | **Released** | Passed | Unverified | Precached |
+| 7 | Watermark PDF | R1.0 | **Released** | Passed | Unverified | Precached |
+| 8 | Page Numbers | R1.0 | **Released** | Passed | Unverified | Precached |
+| 9 | Crop PDF | R1.1 | **Released** | Passed | Unverified | Precached |
+| 10 | Annotate PDF | R1.1 | **Released** | Passed | Unverified | Precached |
+| 11 | Visual Sign PDF | R1.1 | **Released** | Passed | Unverified | Precached |
+| 12 | Fill PDF Forms | R1.1 | **Released** | Passed | Unverified | Precached |
+| 13 | Scan to PDF | R1.1 | **Released** | Passed (file picker; camera not testable here) | Unverified | Precached |
+| 14 | PDF to Text | R1.1 | **Released** | Passed | Unverified | Precached |
+| 15 | Compare PDFs | R1.2 | **Released** | Passed | Unverified | Precached |
+| 16 | OCR PDF to Text | R1.2 | **Released** | Passed | Unverified | **Passed** after first use (server stopped, page reloaded, OCR ran) |
+| 17 | PDF to Word | R1.3 | **Released** | Passed; .docx opened and edited in Microsoft Word | Unverified | Precached |
+
+"Precached" means the tool's code is stored by the offline worker on the first visit. Merge and OCR were run with the server switched off; the other tools use the same cached code but were not each run offline.
+
+## R1.1–R1.3 — evidence
+
+**Automated tests** (`tests/text.test.ts`, `tests/edit.test.ts`, `tests/ocr.test.ts`, 28 tests; **77 of 77 passing** across the project on 2026-11-15):
+- **PDF to Text / layout** (actual fidelity, as the spec asks):
+  - A heading becomes a level-1 heading, and a smaller bold heading becomes level 2.
+  - Two wrapped lines are joined into one paragraph. Malay text is kept exactly.
+  - **Two columns are read row by row across both columns** (a known limitation).
+  - **Tables become plain lines** ("Apples 3 4.50").
+  - Rotated pages work. Pages with no text are flagged for OCR.
+  - Damaged files are refused with a clear message.
+- **PDF to Word (spec test):**
+  - The output is a valid .docx (zip with `[Content_Types].xml`, `word/document.xml`, `word/styles.xml`) containing the real text, Heading1/Heading2 styles and page breaks.
+  - It contains **no page images**.
+  - Control characters that would break the file are removed.
+- **Compare:** a deliberate change ("Price: 10" → "Price: 12") is shown as one removed and one added line. Insertions, empty sides, and very different long files (fallback) are covered.
+- **Crop:**
+  - Trimming 50/100/20/30 pt gives a 465×772 pt page, and other pages are unchanged.
+  - Rotated pages (90°, 180°, 270°) are trimmed on the edges the user sees.
+  - The text is still in the file (this is not redaction).
+  - Crops that leave less than half an inch, and negative values, are refused.
+- **Annotate:**
+  - Text lands exactly where it was placed (top-left origin) and stays upright on pages rotated 90°, 180° and 270°.
+  - Box, ellipse, highlight (multiply blend), arrow, freehand and signature image are all written.
+  - The original text is untouched.
+  - Empty input, missing pages and unsupported characters are refused.
+- **Forms:**
+  - Text, checkbox, dropdown and radio fields are listed, along with max length and read-only status.
+  - Filled values read back correctly after reopening.
+  - Flattening makes the values part of the page.
+  - Clear errors cover: over the maximum length, an option that isn't in a non-editable list, unsupported characters, and an unknown field.
+  - XFA forms are detected: "hybrid" ones are allowed with a warning, and "XFA-only" ones are refused.
+- **OCR (spec test, offline language data):** a scanned image with 4 lines was read exactly, with confidence above 70%.
+
+**Manual browser test** (built-in Chromium browser, production build, 2026-11-15, sample files from `tests/fixtures/generate.mjs`):
+- **PDF to Text:** `report.pdf` gave `report.txt` with page markers, headings and paragraphs. `scanned.pdf` showed "No selectable text… use OCR" and offered no empty download.
+- **PDF to Word:** reported "Selectable text found on 2 of 2 pages (about 43 words)" and the label "Editable text — formatting may change". `report.docx` was 9,853 bytes. The scanned file was refused, with a pointer to OCR and no convert button.
+- **Microsoft Word check:** the same generator's output for `report.pdf` was opened in Microsoft Word on this PC through its automation interface.
+  - It showed 7 paragraphs with styles Heading 1 / Normal / Normal / Heading 2 / Normal / Heading 2 / Normal, across 2 pages.
+  - A paragraph was edited and the file saved and reopened.
+  - **Observed fidelity:** "Total revenue…" and "Prepared by…" are two separate lines in the PDF, but they became one paragraph.
+- **Compare:** `report.pdf` against `report-changed.pdf` gave "1 line only in A, 2 lines only in B" ("RM 120,000" → "RM 128,500", plus "Hire two more staff."). Both pages showed side by side, and Next moved both views together.
+- **Fill Forms:** 5 fields were found. After filling name, tick box, State = Johor, Size = L and Postcode = 81300, saving and reopening in the tool, every value was intact. A PDF without fields pointed to Annotate.
+- **OCR:** `scanned.pdf` took about 2.2 s and read "Delivery Note / Order number: 2026-4471 / Customer: Kedai Buku llmu / Items delivered: 12 boxes / Received in good condition." That is one error: **"Ilmu" was read as "llmu"**.
+  - **Offline:** after one online run, the server was stopped. The page reloaded from the offline copy (offline worker in control) and OCR ran successfully.
+  - **Bug found and fixed:** on the very first visit the offline worker wasn't yet in control, so OCR files weren't cached. It now takes control immediately (`clientsClaim`, `skipWaiting`), and this was confirmed on a fresh load.
+- **Crop:** dragging the corner of the crop box updated the mm fields, and typing values moved the box. Trimming 15/30/15/20 mm (left/bottom/right/top) gave `/CropBox [42.52 85.04 552.48 785.31]` on both pages, which is exact. The "not redaction" warning is shown.
+- **Annotate:** drew a box, highlight, arrow and freehand line, and placed text. The text was selected automatically after placing. Shift+→ moved it 10 pt, and Undo restored it. Clicking a mark selected it, and Delete removed it. A circle was added on page 2. The saved file had 6 marks and a multiply blend for the highlight.
+- **Visual Sign:**
+  - Save was disabled until a signature was placed, and an empty pad was refused.
+  - A drawn signature was trimmed to 649×139 px and placed with a tap (160 pt wide), then resized to 240 pt.
+  - The saved file has the signature image with transparency (SMask) and the "not a certificate-based digital signature" note.
+- **Scan to PDF:** two photos were added (portrait and landscape). The landscape one was rotated and moved first, and the other was cropped by dragging two corners. The result had 2 A4 pages with images of 1200×1600 px and 840×1280 px (exactly 70% × 80%). The camera input asks for the rear camera; a real camera could not be tested here.
+- **Phone width (375 px):** all nine new screens, with files loaded, showed no sideways scrolling. The home page shows all 17 tools and every category chip.
+
+**Not yet tested:**
+- R1.1–R1.3 on a real phone, including the camera in Scan to PDF, touch drawing in Annotate and Sign, and saving .docx and .txt files on iPhone.
+- OCR speed and memory on low-end phones.
+- Large or complex real-world PDFs: multi-column articles, forms made by other software, very long documents.
+- Drag-and-drop page reordering in Organize.
 
 ## Images to PDF, PDF to Images, Watermark, Page Numbers — evidence
 

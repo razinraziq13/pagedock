@@ -9,6 +9,14 @@ import { renderImagesToPdf } from './ui/images-to-pdf';
 import { renderPdfToImages } from './ui/pdf-to-images';
 import { renderWatermark } from './ui/watermark';
 import { renderPageNumbers } from './ui/page-numbers';
+import { renderPdfToText, renderPdfToWord } from './ui/text-tools';
+import { renderOcr } from './ui/ocr';
+import { renderCompare } from './ui/compare';
+import { renderCrop } from './ui/crop';
+import { renderScan } from './ui/scan';
+import { renderAnnotate } from './ui/annotate';
+import { renderSign } from './ui/sign';
+import { renderForms } from './ui/forms';
 
 const views: Record<string, (root: HTMLElement) => void> = {
   merge: renderMerge,
@@ -19,6 +27,15 @@ const views: Record<string, (root: HTMLElement) => void> = {
   'pdf-to-images': renderPdfToImages,
   watermark: renderWatermark,
   'page-numbers': renderPageNumbers,
+  crop: renderCrop,
+  annotate: renderAnnotate,
+  sign: renderSign,
+  forms: renderForms,
+  scan: renderScan,
+  'pdf-to-text': renderPdfToText,
+  compare: renderCompare,
+  ocr: renderOcr,
+  'pdf-to-word': renderPdfToWord,
 };
 
 function route() {

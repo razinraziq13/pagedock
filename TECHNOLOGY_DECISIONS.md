@@ -96,6 +96,29 @@ No UI framework is used. The interface is plain TypeScript and the DOM, which ke
 - **Phone photos:** EXIF orientation is applied by the PDF's image placement matrix. Nothing is re-compressed, so there is no quality loss. HEIC files are refused with instructions, because browsers can't reliably decode them.
 - **PDF to Images:** pages are rendered with pdf.js's print rendering, so exports don't stall in background tabs. Each page is capped at 16 million pixels (the iOS Safari canvas limit); larger pages are scaled down and the user is told.
 
+## 6c. Decisions made while building R1.1–R1.3
+
+- **Text and PDF to Word:**
+  - pdf.js text positions are grouped into lines, paragraphs and size-based headings (`src/core/textlayout.ts`). The docx library (MIT) then writes real Word paragraphs and headings.
+  - Measured limits: two columns are read row by row, and tables become plain lines.
+  - The optional "Preserve layout" mode was dropped together with the Windows `.exe`.
+- **Compare:** a Myers line diff of the extracted text, plus a side-by-side page view. It does not compare images or layout.
+- **OCR:**
+  - tesseract.js 7 (Apache-2.0) runs locally in a Web Worker, with English "best_int" data from @tesseract.js-data/eng (MIT package of the Apache-2.0 tessdata).
+  - Every OCR file is served from this site. Passing `workerPath`, `corePath` and `langPath` stops tesseract.js from ever using its default CDN.
+  - To keep the first visit light, the ~7 MB of OCR files are **not** precached. They are cached on first use: the engine through the offline worker, the language data in IndexedDB (by tesseract.js).
+  - Only English is offered. Other languages need their own data files and testing.
+- **Annotate and Visual Sign:**
+  - These share one editor. pdf.js draws the page, and an SVG layer whose viewBox is the page size in points holds the marks. Screen positions therefore map 1:1 to PDF points.
+  - Marks are written as ordinary page drawing. They are flattened, not PDF annotation objects, so they look the same in every reader.
+  - Pointer events cover mouse, pen and touch. Keyboard: arrow keys move a mark, Delete removes it.
+- **Forms:**
+  - Uses pdf-lib's AcroForm support. XFA data must be detected **before** opening the form API, because the library removes XFA when the form is read or saved.
+  - Dropdowns that allow typed values are allowed by the PDF rules, so values are only checked against the list when the dropdown is not editable.
+- **Scan to PDF:**
+  - `createImageBitmap(..., { imageOrientation: 'from-image' })` makes photos upright. Rotation and crop are applied on a canvas, capped at 3000 px, and saved as JPEG at quality 0.88.
+  - The camera opens through `<input capture="environment">`, and a normal file picker is always offered as well.
+
 ## 7. Risks and open questions
 
 - **pdf-lib fork:** @cantoo/pdf-lib is maintained by a smaller team than the original. If it stalls, the original pdf-lib 1.17.1 is still a working fallback.

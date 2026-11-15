@@ -28,10 +28,21 @@ export default defineConfig({
       workbox: {
         // Precache everything the tools need, so they work with no connection after the first visit.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,mjs,wasm,bcmap,pfb,ttf,icc}'],
-        globIgnores: ['_qa/**'],
+        // OCR files (~7 MB for one device) are not precached; they are cached the first time OCR runs.
+        globIgnores: ['_qa/**', 'ocr/**'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
+        // Take control on the first visit, so files fetched then (e.g. OCR) are cached straight away.
+        clientsClaim: true,
+        skipWaiting: true,
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/ocr/'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'pagedock-ocr-v1', expiration: { maxEntries: 10 } },
+          },
+        ],
       },
     }),
   ],

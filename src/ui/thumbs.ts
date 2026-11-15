@@ -3,13 +3,25 @@ import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 let pdfjsPromise: Promise<typeof import('pdfjs-dist')> | null = null;
 
-/** Load pdf.js only when a tool needs page previews, so the dashboard stays light. */
-function pdfjs() {
+/** Load pdf.js only when a tool needs it, so the dashboard stays light. */
+export function pdfjs() {
   pdfjsPromise ??= import('pdfjs-dist').then((m) => {
     m.GlobalWorkerOptions.workerSrc = workerUrl;
     return m;
   });
   return pdfjsPromise;
+}
+
+/** pdf.js options pointing at our own copies of its fonts and decoders (served locally, cached offline). */
+export function pdfjsAssets() {
+  const asset = (p: string) => new URL(`pdfjs/${p}/`, document.baseURI).href;
+  return {
+    standardFontDataUrl: asset('standard_fonts'),
+    cMapUrl: asset('cmaps'),
+    cMapPacked: true,
+    wasmUrl: asset('wasm'),
+    iccUrl: asset('iccs'),
+  };
 }
 
 export interface Previewer {
@@ -26,16 +38,11 @@ export interface Previewer {
 /** Open a PDF for previews. PDF JavaScript is never run; rendering is capped to small sizes. */
 export async function openPreview(bytes: Uint8Array): Promise<Previewer> {
   const lib = await pdfjs();
-  const asset = (p: string) => new URL(`pdfjs/${p}/`, document.baseURI).href;
   const task = lib.getDocument({
     data: bytes.slice(),
     // No scripting: pdf.js 6 has no eval path, and the page's CSP has no 'unsafe-eval' anyway.
     enableXfa: false,
-    standardFontDataUrl: asset('standard_fonts'),
-    cMapUrl: asset('cmaps'),
-    cMapPacked: true,
-    wasmUrl: asset('wasm'),
-    iccUrl: asset('iccs'),
+    ...pdfjsAssets(),
   });
   const doc: PDFDocumentProxy = await task.promise;
   const rendered = new WeakSet<HTMLCanvasElement>();

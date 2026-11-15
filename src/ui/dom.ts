@@ -25,3 +25,8 @@ export function announce(msg: string) {
   const live = document.getElementById('live');
   if (live) live.textContent = msg;
 }
+
+/** Pointer capture keeps drags working outside the element; some input devices refuse it, which is harmless. */
+export function safeCapture(el: Element, pointerId: number) {
+  try { el.setPointerCapture(pointerId); } catch { /* not capturable: dragging still works inside the element */ }
+}

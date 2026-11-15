@@ -15,10 +15,14 @@
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.11.1",
+    "@tesseract.js-data/eng": "^1.0.0",
+    "docx": "^9.15.4",
     "fflate": "^0.8.3",
-    "pdfjs-dist": "^6.5.438"
+    "pdfjs-dist": "^6.5.438",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.1.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vite-plugin-pwa": "^2.0.0",
