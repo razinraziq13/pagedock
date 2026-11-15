@@ -105,7 +105,11 @@ export function pageEditor(o: EditorOptions) {
     // A generous invisible hit area so thin lines are easy to grab, especially on touch screens.
     const b = bbox(a);
     g.append(svg('rect', { x: b.x - 6, y: b.y - 6, width: b.w + 12, height: b.h + 12, fill: 'transparent', class: 'hit' }));
-    if (a.id === selected) g.append(svg('rect', { x: b.x - 4, y: b.y - 4, width: b.w + 8, height: b.h + 8, class: 'sel-outline' }));
+    if (a.id === selected) {
+      g.append(svg('rect', { x: b.x - 4, y: b.y - 4, width: b.w + 8, height: b.h + 8, class: 'sel-outline' }));
+      // Corner handle to resize signatures and images (keeps their shape), as in Prism Scan.
+      if (a.type === 'image') g.append(svg('circle', { cx: a.x + a.w, cy: a.y + a.h, r: Math.max(8, size.width / 60), class: 'resize-handle', 'data-resize': '1' }));
+    }
     return g;
   }
 
@@ -126,13 +130,22 @@ export function pageEditor(o: EditorOptions) {
     else { a.x += dx; a.y += dy; }
   }
 
-  let drag: { kind: 'move' | 'draw'; start: [number, number]; item: Item; orig?: Item } | null = null;
+  let drag: { kind: 'move' | 'draw' | 'resize'; start: [number, number]; item: Item; orig?: Item } | null = null;
 
   layer.addEventListener('pointerdown', (e) => {
     const s = o.settings();
     const p = pt(e);
     const hitId = Number((e.target as Element).closest('[data-id]')?.getAttribute('data-id') ?? NaN);
-    if (s.tool === 'select') {
+    const hitItem = items.find((a) => a.id === hitId);
+    if (hitItem && (e.target as Element).closest('[data-resize]')) {
+      e.preventDefault();
+      snapshot();
+      drag = { kind: 'resize', start: p, item: hitItem, orig: structuredClone(hitItem) };
+      safeCapture(layer, e.pointerId);
+      return;
+    }
+    // With the signature tool, touching an existing signature moves it instead of stamping another one.
+    if (s.tool === 'select' || (s.tool === 'signature' && hitItem?.type === 'image')) {
       selected = Number.isNaN(hitId) ? null : hitId;
       const it = items.find((a) => a.id === selected);
       if (it) { snapshot(); drag = { kind: 'move', start: p, item: it, orig: structuredClone(it) }; safeCapture(layer, e.pointerId); }
@@ -166,7 +179,12 @@ export function pageEditor(o: EditorOptions) {
     if (!drag) return;
     const p = pt(e);
     const a = drag.item;
-    if (drag.kind === 'move' && drag.orig) {
+    if (drag.kind === 'resize' && drag.orig && drag.orig.type === 'image' && a.type === 'image') {
+      const aspect = drag.orig.w / drag.orig.h;
+      const maxW = Math.min(size.width - a.x, (size.height - a.y) * aspect);
+      a.w = Math.min(Math.max(20, drag.orig.w + (p[0] - drag.start[0])), maxW);
+      a.h = a.w / aspect;
+    } else if (drag.kind === 'move' && drag.orig) {
       const fresh = structuredClone(drag.orig);
       moveBy(fresh, p[0] - drag.start[0], p[1] - drag.start[1]);
       Object.assign(a, fresh);

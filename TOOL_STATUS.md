@@ -24,15 +24,40 @@ A tool appears on the dashboard only once it has passed end-to-end testing (`rel
 | 8 | Page Numbers | R1.0 | **Released** | Passed | Unverified | Precached |
 | 9 | Crop PDF | R1.1 | **Released** | Passed | Unverified | Precached |
 | 10 | Annotate PDF | R1.1 | **Released** | Passed | Unverified | Precached |
-| 11 | Visual Sign PDF | R1.1 | **Released** | Passed | Unverified | Precached |
+| 11 | Visual Sign PDF | R1.1 | **Released** (Prism Scan pad, 15 Nov) | Passed | Unverified | Precached |
 | 12 | Fill PDF Forms | R1.1 | **Released** | Passed | Unverified | Precached |
-| 13 | Scan to PDF | R1.1 | **Released** | Passed (file picker; camera not testable here) | Unverified | Precached |
+| 13 | Scan to PDF | R1.1 | **Released** (Prism Scan flow, 15 Nov) | Passed (file picker; camera not testable here) | Unverified | Precached; edge finder cached on first use |
 | 14 | PDF to Text | R1.1 | **Released** | Passed | Unverified | Precached |
 | 15 | Compare PDFs | R1.2 | **Released** | Passed | Unverified | Precached |
 | 16 | OCR PDF to Text | R1.2 | **Released** | Passed | Unverified | **Passed** after first use (server stopped, page reloaded, OCR ran) |
 | 17 | PDF to Word | R1.3 | **Released** | Passed; .docx opened and edited in Microsoft Word | Unverified | Precached |
 
 "Precached" means the tool's code is stored by the offline worker on the first visit. Merge and OCR were run with the server switched off; the other tools use the same cached code but were not each run offline.
+
+## Scan to PDF and Visual Sign, Prism Scan version — evidence (2026-11-15)
+
+**Automated:** 87 of 87 tests pass. New tests in `tests/scanimage.test.ts`:
+- Corner ordering, and a homography that maps the corners exactly.
+- Straightening a tilted page fills the output and keeps top and bottom the right way round.
+- The output size is capped.
+- Magic whitens shadowed paper and keeps text dark. B&W gives pure black and white. Gray has no colour, Original is unchanged, and Vivid boosts saturation. The input is never modified.
+- 90° rotation works.
+- The new "A4 width" page shape has a test in `tests/images.test.ts`.
+
+**Manual browser test** (built-in Chromium browser, production build):
+- **Edge finding:** a 1600×1200 photo of a tilted white page on a dark table. OpenCV, running in its worker, reported "Document found" in 0.8 s, and the four corners matched the drawn page corners to within about 1 px.
+- **Filters and PDF:** Next gave a 971×841 straightened page. The filter chips were Magic (default), Original, Gray, B&W and Vivid, and the page corner came out pure white. Saving and making the PDF gave 1 page, 595.28×515.58 pt (A4 width, height following the scan).
+- **Visual check:** the text lines came out level and the table background was gone.
+- A plain image with no clear document gave "Edges not found. Drag the coloured dots…" and kept the dots draggable.
+- **Visual Sign:**
+  - With no saved signatures, the pad opened automatically. Purple ink drew 1,285 purple pixels.
+  - "Use this signature" saved it as a tile, selected it and switched to "Place signature".
+  - Tapping the page placed it 160 pt wide. Dragging the corner handle resized it to 212 pt, with the shape kept exactly (6.433 : 1).
+  - The saved PDF has the signature with transparency and `/BM /Multiply`.
+  - After reloading the page, the saved signature was still listed. ✕ deleted it and reopened the pad.
+- **Phone width (375 px):** Sign and the Scan corner screen showed no sideways scrolling.
+- **Offline:** `opencv.js` appeared in the offline cache after first use.
+- **Not yet tested:** a real phone camera and real photos, touch drawing on a real phone, and edge finding on cluttered backgrounds.
 
 ## R1.1–R1.3 — evidence
 

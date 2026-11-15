@@ -2,6 +2,7 @@
 // and can be cached for offline use.
 //  - public/pdfjs: pdf.js fonts, character maps and image decoders (scripting/QuickJS left out on purpose)
 //  - public/ocr:   tesseract.js worker, LSTM engine builds and English language data
+//  - public/vendor/opencv: OpenCV.js for finding document edges
 import { cpSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
@@ -32,4 +33,11 @@ cpSync(join(core, 'LICENSE'), 'public/ocr/core/LICENSE');
 // "best_int": the accurate English model, integer-quantised (about 3 MB)
 cpSync(join(eng, '4.0.0_best_int/eng.traineddata.gz'), 'public/ocr/lang/eng.traineddata.gz');
 
-console.log('pdf.js and OCR assets copied');
+// ---- OpenCV.js (document edge finding in Scan to PDF; runs in public/scan-edge-worker.js)
+const ocv = pkg('@techstark/opencv-js');
+rmSync('public/vendor/opencv', { recursive: true, force: true });
+mkdirSync('public/vendor/opencv', { recursive: true });
+cpSync(join(ocv, 'dist/opencv.js'), 'public/vendor/opencv/opencv.js');
+cpSync(join(ocv, 'LICENSE'), 'public/vendor/opencv/LICENSE');
+
+console.log('pdf.js, OCR and OpenCV assets copied');

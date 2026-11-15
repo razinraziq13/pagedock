@@ -30,7 +30,7 @@ export default defineConfig({
         // Precache everything the tools need, so they work with no connection after the first visit.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,mjs,wasm,bcmap,pfb,ttf,icc}'],
         // OCR files (~7 MB for one device) are not precached; they are cached the first time OCR runs.
-        globIgnores: ['_qa/**', 'ocr/**'],
+        globIgnores: ['_qa/**', 'ocr/**', 'vendor/**'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
@@ -42,6 +42,12 @@ export default defineConfig({
             urlPattern: ({ url }) => url.pathname.includes('/ocr/'),
             handler: 'CacheFirst',
             options: { cacheName: 'pagedock-ocr-v1', expiration: { maxEntries: 10 } },
+          },
+          {
+            // OpenCV.js (~10 MB) for Scan to PDF edge finding: cached on first use.
+            urlPattern: ({ url }) => url.pathname.includes('/vendor/opencv/'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'pagedock-opencv-v1', expiration: { maxEntries: 4 } },
           },
         ],
       },

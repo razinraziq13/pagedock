@@ -103,7 +103,8 @@ export async function applyAnnotations(input: PdfInput, annots: Annotation[]): P
         let img;
         try { img = await doc.embedPng(a.png); } catch { throw new RangeError_('The signature image could not be read.'); }
         const p = at(page, a.x, a.y + a.h);
-        page.drawImage(img, { x: p.x, y: p.y, width: a.w, height: a.h, rotate: degrees(p.rot) });
+        // Multiply blend: white paper behind a signature photo disappears, like ink on paper (as in Prism Scan).
+        page.drawImage(img, { x: p.x, y: p.y, width: a.w, height: a.h, rotate: degrees(p.rot), blendMode: BlendMode.Multiply });
         break;
       }
     }

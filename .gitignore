@@ -5,3 +5,4 @@ coverage/
 *.log
 public/pdfjs/
 public/ocr/
+public/vendor/

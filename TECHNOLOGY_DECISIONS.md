@@ -119,6 +119,23 @@ No UI framework is used. The interface is plain TypeScript and the DOM, which ke
   - `createImageBitmap(..., { imageOrientation: 'from-image' })` makes photos upright. Rotation and crop are applied on a canvas, capped at 3000 px, and saved as JPEG at quality 0.88.
   - The camera opens through `<input capture="environment">`, and a normal file picker is always offered as well.
 
+## 6d. Scan to PDF and Visual Sign, rebuilt from Prism Scan (15 November 2026)
+
+The owner asked for these two tools to work like their own Prism Scan app, so its code was ported. It is the owner's own project.
+
+- **Edge finding:**
+  - Uses OpenCV.js 4.10 (Apache-2.0).
+  - Prism Scan loaded it from a CDN. PageDock serves its own copy instead, to keep the no-CDN rule.
+  - OpenCV's JavaScript creates functions at runtime (`new Function`), which the page's strict security policy rightly blocks. So it runs in a separate worker loaded from the site (`public/scan-edge-worker.js`). Worker scripts get their own policy from the server's response headers, not the page's meta tag. The main page keeps its strict policy, and the screen stays responsive while edges are found.
+  - It is cached on first use (about 10 MB) rather than downloaded on every first visit.
+  - If it can't load, the user drags the corners by hand.
+- **Image processing:** perspective straightening (homography plus bilinear sampling), the five filters and 90° rotation are pure functions in `src/core/scanimage.ts`, with unit tests.
+- **Signatures:**
+  - The pad uses smoothed curves with speed-based line width, and has 4 inks.
+  - Saved signatures are kept in this browser's IndexedDB, only when the user ticks "Save on this device".
+  - A corner handle resizes a placed signature and keeps its shape.
+  - The signature is drawn with a multiply blend, so white paper behind a photographed signature disappears.
+
 ## 7. Risks and open questions
 
 - **pdf-lib fork:** @cantoo/pdf-lib is maintained by a smaller team than the original. If it stalls, the original pdf-lib 1.17.1 is still a working fallback.

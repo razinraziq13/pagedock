@@ -20,6 +20,7 @@ This list was last checked against `package-lock.json` and the files in `node_mo
 | pdf.js `wasm/` jbig2 decoder | bundled with pdfjs-dist | BSD-style (PDFium, `LICENSE_JBIG2`) and Apache-2.0 (`LICENSE_PDFJS_JBIG2`) |
 | pdf.js `wasm/` openjpeg decoder | bundled with pdfjs-dist | BSD-2-Clause (`LICENSE_OPENJPEG`) and Apache-2.0 (`LICENSE_PDFJS_OPENJPEG`) |
 | pdf.js `wasm/` qcms colour management | bundled with pdfjs-dist | MIT (`LICENSE_QCMS`) and Apache-2.0 (`LICENSE_PDFJS_QCMS`) |
+| OpenCV.js, from @techstark/opencv-js (document edge finding in Scan to PDF; runs in its own worker) | 4.10.0-release.1 | Apache-2.0 |
 | docx (PDF to Word) | 9.15.4 | MIT |
 | nanoid (dependency of docx) | 6.0.2 | MIT |
 | tesseract.js (OCR, browser API and worker) | 7.0.0 | Apache-2.0 |
@@ -27,6 +28,10 @@ This list was last checked against `package-lock.json` and the files in `node_mo
 | English OCR model `eng.traineddata` ("4.0.0_best_int") from @tesseract.js-data/eng | 1.0.0 | Package: MIT. The data comes from Google's tessdata, Apache-2.0 |
 | tesseract.js browser dependencies: wasm-feature-detect, idb-keyval | 1.10.1, 6.3.0 | Apache-2.0 |
 | tesseract.js dependencies: bmp-js, is-url, regenerator-runtime, zlibjs | 0.1.0, 1.2.4, 0.13.11, 0.3.1 | MIT |
+
+**OpenCV:** `scripts/copy-pdfjs-assets.mjs` copies `opencv.js` and its LICENSE into `public/vendor/opencv/`. It is loaded only by `public/scan-edge-worker.js`, never from a CDN.
+
+**Prism Scan:** the scan workflow, perspective straightening, filters, signature pad and saved-signature design were ported from the project owner's own Prism Scan repository (github.com/razinraziq13/prism-scan), with the owner's permission.
 
 **OCR files:** `scripts/copy-pdfjs-assets.mjs` copies the tesseract.js worker, the three LSTM engine builds and the English model into `public/ocr/`, with the tesseract.js and tesseract.js-core LICENSE files. These are served from this site only; no CDN is used.
 

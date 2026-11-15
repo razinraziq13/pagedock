@@ -87,6 +87,15 @@ describe('imagesToPdf', () => {
     expect(o8.cm).toEqual([0, 12, -6, 0, 6, 0]);
   });
 
+  it("'a4width' makes A4-wide pages whose height follows each scan, with no margins", async () => {
+    const out = await imagesToPdf([{ name: 'a.png', bytes: makePng(100, 150) }, { name: 'b.png', bytes: makePng(200, 100) }], { pageSize: 'a4width', orientation: 'auto', margin: 36 });
+    const [a, b] = await placements(out);
+    expect(a.size.width).toBeCloseTo(595.28);
+    expect(a.size.height).toBeCloseTo(892.92);
+    expect(b.size.height).toBeCloseTo(297.64);
+    expect(a.cm!.slice(4)).toEqual([0, 0]);
+  });
+
   it('caps huge images to a page size readers accept', async () => {
     const out = await imagesToPdf([{ name: 'huge.jpg', bytes: makeJpeg(undefined, 30000, 15000) }], { pageSize: 'fit', orientation: 'auto', margin: 0 });
     const [p] = await placements(out);

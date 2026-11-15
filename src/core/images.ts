@@ -9,7 +9,8 @@ export interface ImageInput {
 }
 
 export interface ImagesToPdfOptions {
-  pageSize: 'fit' | 'a4' | 'letter';
+  /** 'a4width': A4-wide page whose height follows the image (no margins), like a scanner app. */
+  pageSize: 'fit' | 'a4' | 'letter' | 'a4width';
   orientation: 'auto' | 'portrait' | 'landscape';
   /** Space around the image, in points (72 pt = 1 inch). Ignored for 'fit'. */
   margin: number;
@@ -75,6 +76,10 @@ const ORIENT: Record<number, [number, number, number, number, number, number]> =
 };
 
 function pageFor(displayW: number, displayH: number, opts: ImagesToPdfOptions): [number, number] {
+  if (opts.pageSize === 'a4width') {
+    const w = PAGE_SIZES.a4[0];
+    return [w, Math.min(MAX_PT, (w * displayH) / displayW)];
+  }
   if (opts.pageSize === 'fit') {
     let w = displayW * PX_TO_PT, h = displayH * PX_TO_PT;
     const k = Math.min(1, MAX_PT / Math.max(w, h));
@@ -109,7 +114,7 @@ export async function imagesToPdf(images: ImageInput[], opts: ImagesToPdfOptions
 
     const [pw, ph] = pageFor(dispW, dispH, opts);
     const page = doc.addPage([pw, ph]);
-    const margin = opts.pageSize === 'fit' ? 0 : Math.min(opts.margin, pw / 3, ph / 3);
+    const margin = opts.pageSize === 'fit' || opts.pageSize === 'a4width' ? 0 : Math.min(opts.margin, pw / 3, ph / 3);
     const boxW = pw - 2 * margin, boxH = ph - 2 * margin;
     const scale = Math.min(boxW / dispW, boxH / dispH);
     const w = dispW * scale, h = dispH * scale;
