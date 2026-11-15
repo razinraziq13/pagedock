@@ -3,7 +3,7 @@
 **Last updated:** 15 November 2026
 **Delivery:** website / installable PWA only. The Windows `.exe` was dropped by the project owner.
 
-**Released:** 4 of 17 (Merge, Split, Organize, Rotate).
+**Released:** 8 of 17 — all of R1.0 (Merge, Split, Organize, Rotate, Images to PDF, PDF to Images, Watermark, Page Numbers).
 
 A tool appears on the dashboard only once it has passed end-to-end testing (`released: true` in `src/tools.ts`).
 
@@ -13,10 +13,10 @@ A tool appears on the dashboard only once it has passed end-to-end testing (`rel
 | 2 | Split PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
 | 3 | Organize PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
 | 4 | Rotate PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
-| 5 | Images to PDF | R1.0 | Not started | — | — | — |
-| 6 | PDF to Images | R1.0 | Not started | — | — | — |
-| 7 | Watermark PDF | R1.0 | Not started | — | — | — |
-| 8 | Page Numbers | R1.0 | Not started | — | — | — |
+| 5 | Images to PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
+| 6 | PDF to Images | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
+| 7 | Watermark PDF | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
+| 8 | Page Numbers | R1.0 | **Released** | Passed (see evidence) | Unverified | Unverified |
 | 9 | Crop PDF | R1.1 | Not started | — | — | — |
 | 10 | Annotate PDF | R1.1 | Not started | — | — | — |
 | 11 | Visual Sign PDF | R1.1 | Not started | — | — | — |
@@ -26,6 +26,44 @@ A tool appears on the dashboard only once it has passed end-to-end testing (`rel
 | 15 | Compare PDFs | R1.2 | Not started | — | — | — |
 | 16 | OCR PDF to Text | R1.2 | Not started | — | — | — |
 | 17 | PDF to Word | R1.3 | Not started | — | — | — |
+
+## Images to PDF, PDF to Images, Watermark, Page Numbers — evidence
+
+**Automated tests** (`tests/stamp.test.ts`, `tests/images.test.ts`, 26 tests; 49 of 49 passing across the project on 2026-11-15). Text positions are read back with pdf.js *as displayed*, so rotation and crop are checked the way a reader shows them.
+- **Page Numbers:**
+  - Start number 7 on 3 pages gives 7, 8, 9 (spec test).
+  - On pages rotated 0°, 90°, 180° and 270°, the number is upright, centred and 20–45 pt from the bottom edge.
+  - All six positions land inside the margins.
+  - A crop box offset from the media box is respected.
+  - "2-" skips a cover page ("1 / 2", "2 / 2").
+  - On a 60×60 pt page the text shrinks instead of clipping.
+  - Bad start numbers, font sizes and ranges are refused.
+- **Watermark:**
+  - Text appears only on the chosen pages, at opacity /ca 0.3, centred (spec test).
+  - Long text at 45° shrinks to stay on the page.
+  - On a 90°-rotated page it is upright and centred.
+  - An image watermark appears on the chosen page only, at the chosen opacity.
+  - Chinese text is refused with the exact characters named. The PDF library would otherwise silently print "??"; this was found by a test and fixed.
+  - Malay text such as "SULIT — Salinan Terkawal" works.
+- **Images to PDF:**
+  - One page per image, in order (spec test). "Fit" pages match the image at 96 dpi.
+  - A4 automatically picks landscape or portrait, centres the image inside the margins and keeps the aspect ratio.
+  - Forced portrait and landscape both work.
+  - EXIF orientation 3, 6 and 8 produce the correct upright placement. This is done without re-compressing the image.
+  - Huge images are capped at 14,400 pt.
+  - Non-images and damaged images are refused with the filename.
+
+**Manual browser test** (built-in Chromium browser, production build, 2026-11-15):
+- **Images to PDF:** a PNG (300×150, red top / blue bottom), a JPEG of the same picture tagged EXIF orientation 6, and a fake `.HEIC` file were added. The HEIC file was refused with instructions for iPhone. Converting the other two gave a 2-page PDF: landscape A4 for the PNG and portrait A4 for the rotated JPEG.
+- **PDF to Images:** converting that PDF back to PNG at 72 dpi gave 841×595 for page 1 (red on top) and 595×841 for page 2, with red on the **right**. That is the correct upright result for EXIF 6 (rotate 90° clockwise). The JPG choice at 150 dpi for both pages gave `images-images.zip` (starts with `PK`) with two JPGs. A range of "7" for a 2-page file was refused.
+- **Watermark:** with a 5-page file, pages "2,4", red, 45°: the live preview showed page 2 with the diagonal mark (544 tinted pixels, checked by screenshot). The saved file had 5 pages with two `/ca 0.3` graphics states.
+- **Page Numbers:** "Page 1 of 10" style, bottom right, large, pages "2-": the preview of page 2 had the label 19 px from the right and 20 px from the bottom at preview scale. A negative start number disabled the button. The saved file had 5 pages.
+- **Phone width (375 px):** all four screens with a file loaded showed no sideways scrolling. The home page shows 8 tools.
+- **Bug found and fixed:** PDF to Images stalled when the browser tab was in the background, because pdf.js waits on animation frames. Exports now use pdf.js's print rendering, which doesn't.
+
+**Not yet tested:**
+- Real phones, including real iPhone and Android photos, iOS HEIC handling and Share / Save to Files.
+- PDF to Images with very large or many pages on a phone.
 
 ## Split, Rotate, Organize — evidence
 

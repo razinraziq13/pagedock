@@ -5,12 +5,20 @@ import { renderMerge } from './ui/merge';
 import { renderSplit } from './ui/split';
 import { renderRotate } from './ui/rotate';
 import { renderOrganize } from './ui/organize';
+import { renderImagesToPdf } from './ui/images-to-pdf';
+import { renderPdfToImages } from './ui/pdf-to-images';
+import { renderWatermark } from './ui/watermark';
+import { renderPageNumbers } from './ui/page-numbers';
 
 const views: Record<string, (root: HTMLElement) => void> = {
   merge: renderMerge,
   split: renderSplit,
   rotate: renderRotate,
   organize: renderOrganize,
+  'images-to-pdf': renderImagesToPdf,
+  'pdf-to-images': renderPdfToImages,
+  watermark: renderWatermark,
+  'page-numbers': renderPageNumbers,
 };
 
 function route() {

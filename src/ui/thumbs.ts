@@ -16,6 +16,10 @@ export interface Previewer {
   pageCount: number;
   /** Returns a <canvas> wrapper that renders its page when it scrolls into view. */
   thumb(index: number, width?: number): HTMLElement;
+  /** Displayed page size in points (after page rotation). */
+  pageSize(index: number): Promise<{ width: number; height: number }>;
+  /** Render a page at `scale` (1 = 72 dpi) onto a new canvas with a white background. */
+  render(index: number, scale: number): Promise<HTMLCanvasElement>;
   destroy(): void;
 }
 
@@ -74,9 +78,47 @@ export async function openPreview(bytes: Uint8Array): Promise<Previewer> {
       observer.observe(canvas);
       return canvas;
     },
+    async pageSize(index) {
+      const page = await doc.getPage(index + 1);
+      const vp = page.getViewport({ scale: 1 });
+      return { width: vp.width, height: vp.height };
+    },
+    async render(index, scale) {
+      const page = await doc.getPage(index + 1);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.floor(viewport.width));
+      canvas.height = Math.max(1, Math.floor(viewport.height));
+      const ctx = canvas.getContext('2d')!;
+      // White background, so transparent PDF pages don't become black in JPG output.
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // 'print' intent: renders as the page would print, and does not wait on animation frames,
+      // so exports keep going when the tab is in the background.
+      await page.render({ canvas, viewport, background: 'white', intent: 'print' } as Parameters<typeof page.render>[0]).promise;
+      page.cleanup();
+      return canvas;
+    },
     destroy() {
       observer.disconnect();
       task.destroy();
     },
   };
+}
+
+/** Largest canvas most phones allow (iOS Safari limit is about 16.7 million pixels). */
+export const MAX_CANVAS_PIXELS = 16_000_000;
+
+/** Render one page of some PDF bytes into a preview canvas that fits `width` CSS pixels. */
+export async function renderPreview(bytes: Uint8Array, index: number, width: number): Promise<HTMLCanvasElement> {
+  const p = await openPreview(bytes);
+  try {
+    const size = await p.pageSize(index);
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    const canvas = await p.render(index, (width / size.width) * ratio);
+    canvas.className = 'preview-canvas';
+    return canvas;
+  } finally {
+    p.destroy();
+  }
 }

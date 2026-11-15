@@ -89,6 +89,13 @@ No UI framework is used. The interface is plain TypeScript and the DOM, which ke
   - The original file is never written to. Outputs are always new Blobs.
   - The site is served with a strict Content Security Policy and loads no third-party scripts.
 
+## 6b. Decisions made while building R1.0
+
+- **Positions on rotated and cropped pages:** watermarks and page numbers are placed in "display space" (the page as a reader shows it) and then mapped into the page's own coordinates. This keeps them upright and inside the visible crop box on rotated pages.
+- **Built-in font:** the standard Helvetica font only covers Latin characters. The PDF library silently replaces anything else with "?", so PageDock checks the text first and names any character it can't show. Embedding a Unicode font is possible later, but it adds file size.
+- **Phone photos:** EXIF orientation is applied by the PDF's image placement matrix. Nothing is re-compressed, so there is no quality loss. HEIC files are refused with instructions, because browsers can't reliably decode them.
+- **PDF to Images:** pages are rendered with pdf.js's print rendering, so exports don't stall in background tabs. Each page is capped at 16 million pixels (the iOS Safari canvas limit); larger pages are scaled down and the user is told.
+
 ## 7. Risks and open questions
 
 - **pdf-lib fork:** @cantoo/pdf-lib is maintained by a smaller team than the original. If it stalls, the original pdf-lib 1.17.1 is still a working fallback.

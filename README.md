@@ -2,7 +2,7 @@
 
 Free PDF tools that stay on your device. PageDock is a website you can install as an app (a PWA) on Windows, iPhone and Android. Your files are processed in your browser and are never uploaded.
 
-**Status:** early development. **4 of 17** planned tools are available (Merge, Split, Organize and Rotate PDF). See [TOOL_STATUS.md](TOOL_STATUS.md) for what is tested on which platform.
+**Status:** early development. **8 of 17** planned tools are available: all of release R1.0 (Merge, Split, Organize, Rotate, Images to PDF, PDF to Images, Watermark, Page Numbers). See [TOOL_STATUS.md](TOOL_STATUS.md) for what is tested on which platform.
 
 ## Use it
 
