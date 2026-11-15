@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// Relative base so the same build works on GitHub Pages (/pagedock-free/) and locally.
+// Relative base so the same build works on GitHub Pages (/pagedock/) and locally.
 export default defineConfig({
   base: './',
   build: { target: 'es2022', chunkSizeWarningLimit: 900 },

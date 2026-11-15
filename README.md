@@ -6,7 +6,7 @@ Free PDF tools that stay on your device. PageDock is a website you can install a
 
 ## Use it
 
-- **Website:** https://razinraziq13.github.io/pagedock-free/ (live once GitHub Pages has deployed)
+- **Website:** https://razinraziq13.github.io/pagedock/ (live once GitHub Pages has deployed)
 - **Install on Windows:** open the site in Edge or Chrome, then click the install icon in the address bar.
 - **Install on iPhone:** open the site in Safari, tap Share, then **Add to Home Screen**.
 - **Install on Android:** open the site in Chrome, tap ⋮, then **Install app** (or **Add to Home screen**).
