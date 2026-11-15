@@ -1,0 +1,24 @@
+{
+  "name": "pagedock-free",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Free PDF tools that stay on your device",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cantoo/pdf-lib": "^2.11.1"
+  },
+  "devDependencies": {
+    "pdfjs-dist": "^6.5.438",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0"
+  }
+}

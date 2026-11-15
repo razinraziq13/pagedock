@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="theme-color" content="#3267E8" />
+  <meta name="description" content="Free PDF tools that stay on your device." />
+  <title>PageDock Free</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="PageDock" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="PageDock home">
+      <img src="icon.svg" alt="" width="28" height="28" />
+      <span>PageDock</span>
+    </a>
+    <span class="local-badge" title="Your files are processed in this browser and are not uploaded.">
+      <span class="dot" aria-hidden="true"></span> On-device
+    </span>
+  </header>
+  <main id="main" tabindex="-1"></main>
+  <footer class="foot">
+    <p>Your PDFs. Your device. Your control. Files are processed in your browser and never uploaded.</p>
+  </footer>
+  <div id="live" class="sr-only" aria-live="polite"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
