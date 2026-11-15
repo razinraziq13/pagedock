@@ -38,7 +38,7 @@ This list was last checked against `package-lock.json` and the files in `node_mo
 
 **What these licenses require:**
 - MIT, BSD and Apache-2.0 require the copyright and license notices to be kept with the code. Apache-2.0 also requires its NOTICE text to be kept, if a package has one.
-- An "Open-source licenses" page inside the app is planned before the R1.0 release. **It does not exist yet.**
+- The app's About page (Help → Open-source licences) lists every shipped component and its licence; full texts are published in the site's pdfjs/ and ocr/ folders.
 
 **Not shipped:** `@napi-rs/canvas` is an optional Node-only dependency of pdfjs-dist (MIT). It is also used in tests (see below). It is never bundled into the website.
 

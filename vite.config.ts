@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // Relative base so the same build works on GitHub Pages (/pagedock/) and locally.
 export default defineConfig({
   base: './',
+  define: { __APP_VERSION__: JSON.stringify(`${process.env.npm_package_version ?? '0.0.0'} (${new Date().toISOString().slice(0, 10)})`) },
   build: { target: 'es2022', chunkSizeWarningLimit: 900 },
   plugins: [
     VitePWA({

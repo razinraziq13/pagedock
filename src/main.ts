@@ -17,6 +17,7 @@ import { renderScan } from './ui/scan';
 import { renderAnnotate } from './ui/annotate';
 import { renderSign } from './ui/sign';
 import { renderForms } from './ui/forms';
+import { renderAbout } from './ui/about';
 
 const views: Record<string, (root: HTMLElement) => void> = {
   merge: renderMerge,
@@ -43,7 +44,11 @@ function route() {
   main.replaceChildren();
   const id = location.hash.replace(/^#\/?/, '');
   const tool = TOOLS.find((t) => t.id === id && t.released);
-  if (tool && views[tool.id]) {
+  if (id === 'about') {
+    document.title = 'About · PageDock Free';
+    renderAbout(main);
+    main.focus();
+  } else if (tool && views[tool.id]) {
     document.title = `${tool.name} · PageDock Free`;
     views[tool.id](main);
     main.focus();
