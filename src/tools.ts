@@ -10,10 +10,11 @@ export interface ToolInfo {
   released: boolean;
 }
 
-// The 19 tools. Unreleased tools are tracked here but never shown. See TOOL_STATUS.md.
+// The tool catalog. Unreleased tools are tracked here but never shown. See TOOL_STATUS.md.
 export const TOOLS: ToolInfo[] = [
   { id: 'edit-pdf', name: 'Edit PDF', benefit: 'See every page; edit text, add pictures and marks, and organize pages in one place.', input: '1 PDF', category: 'Edit & Forms', released: true },
   { id: 'edit-word', name: 'Edit Word', benefit: 'View Word pages, edit the text, and save as .docx or PDF.', input: '1 .docx', category: 'Edit & Forms', released: true },
+  { id: 'compress', name: 'Compress PDF', benefit: 'Reduce PDF file size with options for text documents and scans.', input: '1 PDF', category: 'Organize', released: true },
   { id: 'merge', name: 'Merge PDF', benefit: 'Combine several PDFs into one, in the order you choose.', input: '2 or more PDFs', category: 'Organize', released: true },
   { id: 'split', name: 'Split PDF', benefit: 'Extract pages or ranges into new PDFs.', input: '1 PDF', category: 'Organize', released: true },
   { id: 'organize', name: 'Organize PDF', benefit: 'Reorder, remove and rotate pages.', input: '1 PDF', category: 'Organize', released: true },

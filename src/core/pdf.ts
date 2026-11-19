@@ -22,12 +22,12 @@ export function looksLikePdf(bytes: Uint8Array): boolean {
 }
 
 /** Load a PDF for reading/copying. Encrypted files are refused, never bypassed. */
-export async function loadPdf(input: PdfInput): Promise<PDFDocument> {
+export async function loadPdf(input: PdfInput, options: { preserveXFA?: boolean } = {}): Promise<PDFDocument> {
   if (input.bytes.length === 0) throw new PdfInputError(input.name, 'the file is empty.');
   if (!looksLikePdf(input.bytes)) throw new PdfInputError(input.name, 'this is not a PDF file.');
   let doc: PDFDocument;
   try {
-    doc = await PDFDocument.load(input.bytes, { ignoreEncryption: true, updateMetadata: false });
+    doc = await PDFDocument.load(input.bytes, { ignoreEncryption: true, updateMetadata: false, ...options });
   } catch {
     throw new PdfInputError(input.name, 'the PDF is damaged or could not be read.');
   }

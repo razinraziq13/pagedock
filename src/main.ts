@@ -4,6 +4,7 @@ import './workspace.css';
 import { TOOLS } from './tools';
 import { renderDashboard } from './ui/dashboard';
 import { renderMerge } from './ui/merge';
+import { renderCompress } from './ui/compress';
 import { renderSplit } from './ui/split';
 import { renderRotate } from './ui/rotate';
 import { renderOrganize } from './ui/organize';
@@ -30,6 +31,7 @@ const views: Record<string, (root: HTMLElement) => void> = {
   'edit-pdf': renderWorkspace,
   'edit-word': renderWordEditor,
   merge: renderMerge,
+  compress: renderCompress,
   split: renderSplit,
   rotate: renderRotate,
   organize: renderOrganize,

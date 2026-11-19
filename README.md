@@ -2,7 +2,7 @@
 
 Free PDF tools that stay on your device. PageDock is a website you can install as an app (a PWA) on Windows, iPhone and Android. Your files are processed in your browser and are never uploaded.
 
-**Status:** all **19** tools are available, including the Edit PDF workspace and Edit Word. See [TOOL_STATUS.md](TOOL_STATUS.md) for what is tested on which platform.
+**Status:** all **20** tools are available, including Compress PDF, Edit PDF and Edit Word. See [TOOL_STATUS.md](TOOL_STATUS.md) for what is tested on which platform.
 
 ## Use it
 
@@ -35,7 +35,7 @@ Every push to `main` runs `.github/workflows/deploy.yml`. It tests the code, bui
 ```
 src/core/      PDF processing, with no browser UI code (unit tested)
 src/ui/        dashboard, tool screens, save/share helpers
-src/tools.ts   the 19 tools; only released ones are shown
+src/tools.ts   the 20 tools; only released ones are shown
 tests/         vitest tests and fixture PDFs
 docs/          V5 product spec and build prompt
 ```
