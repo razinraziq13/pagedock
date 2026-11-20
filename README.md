@@ -4,6 +4,10 @@ Free PDF tools that stay on your device. PageDock is a website you can install a
 
 **Status:** all **20** tools are available, including Compress PDF, Edit PDF and Edit Word. See [TOOL_STATUS.md](TOOL_STATUS.md) for what is tested on which platform.
 
+## Video panduan
+
+▶️ **[Tonton video panduan (Bahasa Melayu, 2:30)](docs/video/PageDock_Panduan.mp4)** — cara install di Windows, iPhone dan Android, serta cara guna (contoh: Merge PDF dan Visual Sign PDF).
+
 ## Use it
 
 - **Website:** https://razinraziq13.github.io/pagedock/ (live once GitHub Pages has deployed)
